@@ -69,18 +69,38 @@ while (i < md.length) {
   h.push(`<p style="font-size:10.5pt;text-align:justify;margin:0 0 9pt 0;line-height:1.35">${inline(p.join(" "))}</p>`);
 }
 
-const faits = [["Taux global de conformité RGAA", "51 %"], ["Critères non conformes", "36 sur 106, dont 1 bloquant"],
-  ["Points de non-conformité", "116"], ["Audit instruit", "1060 / 1060 résultats"],
-  ["Référentiel", "RGAA 4.1 — 106 critères, 258 tests"], ["Échantillon", "9 pages et les éléments transverses"],
-  ["Date", "14 septembre 2026"], ["Auditeur", "Arthur Sotty"], ["Outil", "Ara — ara.numerique.gouv.fr"]];
+/* La page de garde se remplit depuis le rapport lui-meme : rien n'est code en dur ici.
+   - le domaine vient du titre « # Audit RGAA 4.1 — <domaine> »
+   - date, referentiel et echantillon viennent des lignes **Date** / **Échantillon**
+   - les chiffres viennent du premier tableau a deux colonnes du rapport             */
+const brut = fs.readFileSync(SRC, "utf8");
+const sansBalise = (t) => t.replace(/\*\*/g, "").replace(/`/g, "").trim();
+const titre = (brut.match(/^#\s+(.+)$/m) || [, "Audit RGAA"])[1];
+// Ne couper que sur un tiret separateur entoure d'espaces : sans cela « eurogerm-france.com »
+// serait tronque en « france.com ».
+const domaine = sansBalise(titre.split(/\s[—–-]\s/).pop() || titre);
+
+const meta = {};
+for (const m of brut.matchAll(/\*\*([^*]+)\*\*\s*:\s*([^·\n]+)/g)) meta[sansBalise(m[1])] = sansBalise(m[2]);
+
+const faits = [];
+const tableauSynthese = brut.match(/\n\|[^\n]*\|\n\|[-: |]+\|\n((?:\|[^\n]*\|\n)+)/);
+if (tableauSynthese) {
+  for (const ligne of tableauSynthese[1].trim().split("\n")) {
+    const c = ligne.replace(/^\||\|$/g, "").split("|").map((x) => sansBalise(x));
+    if (c.length === 2 && c[0] && c[1]) faits.push([c[0], c[1]]);
+  }
+}
+for (const k of ["Référentiel", "Échantillon", "Date", "Auditeur", "Type"])
+  if (meta[k]) faits.push([k, meta[k]]);
+faits.push(["Outil", "Ara — ara.numerique.gouv.fr"]);
 
 const garde = `
 <div style="page-break-after:always">
   <p style="margin-top:120pt;font-size:12pt;color:${GRIS};letter-spacing:2pt"><b>AUDIT D'ACCESSIBILITÉ</b></p>
   <p style="font-size:40pt;color:${ENCRE};margin:0"><b>RGAA 4.1</b></p>
   <p style="border-bottom:3pt solid ${JAUNE};margin:6pt 0 26pt 0">&nbsp;</p>
-  <p style="font-size:22pt;color:${ENCRE};margin:0 0 4pt 0"><b>eurogerm-france.com</b></p>
-  <p style="font-size:11pt;color:${GRIS};margin:0 0 34pt 0">Site de la filière blé-farine-pain-pâtisserie</p>
+  <p style="font-size:22pt;color:${ENCRE};margin:0 0 34pt 0"><b>${esc(domaine)}</b></p>
   <table width="640" cellspacing="0" cellpadding="0" style="border-collapse:collapse;table-layout:fixed"><colgroup><col width="250"><col width="390"></colgroup>
    ${faits.map(([k, v]) => `<tr>
      <td width="250" style="padding:5pt 0;font-size:10pt;color:${GRIS}">${esc(k)}</td>
@@ -89,7 +109,7 @@ const garde = `
 </div>`;
 
 fs.writeFileSync(OUT, `<!doctype html>
-<html lang="fr"><head><meta charset="utf-8"><title>Audit RGAA 4.1 — eurogerm-france.com</title></head>
+<html lang="fr"><head><meta charset="utf-8"><title>${esc(titre)}</title></head>
 <body style="font-family:Calibri,sans-serif;color:${ENCRE}">
 ${garde}
 <p style="page-break-before:always;margin:0;font-size:1pt">&nbsp;</p>

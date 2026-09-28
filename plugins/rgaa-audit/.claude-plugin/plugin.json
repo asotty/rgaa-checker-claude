@@ -1,0 +1,7 @@
+{
+  "name": "rgaa-audit",
+  "version": "1.1.0",
+  "description": "Audit RGAA 4.1 complet (106 criteres / 258 tests) : sonde le site en ligne, croise avec le code source, puis remplit l'audit dans Ara via son API REST.",
+  "author": { "name": "Eclolink" },
+  "keywords": ["rgaa", "accessibilite", "a11y", "ara", "audit", "wcag"]
+}

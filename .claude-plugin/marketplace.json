@@ -1,0 +1,16 @@
+{
+  "name": "rgaa-audit",
+  "owner": {
+    "name": "Eclolink"
+  },
+  "plugins": [
+    {
+      "name": "rgaa-audit",
+      "source": "./plugins/rgaa-audit",
+      "description": "Audit RGAA 4.1 complet d'un site (code + version en ligne) et remplissage de l'audit dans Ara via son API REST."
+    }
+  ],
+  "metadata": {
+    "description": "Outillage d audit RGAA 4.1 et de remplissage Ara, reutilisable sur tout site."
+  }
+}

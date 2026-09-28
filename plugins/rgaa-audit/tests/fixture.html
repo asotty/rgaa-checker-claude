@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Fixture RGAA</title>
+<style>
+  body { background:#fff; color:#222; font-family:sans-serif; }
+  .faible { color:#bbb; }            /* contraste insuffisant, attendu ~1.9 */
+  .bon { color:#111; }               /* contraste OK, ne doit pas remonter */
+  .surimage { background-image:linear-gradient(#fff,#000); color:#888; } /* bgUnknown attendu */
+  .justif { text-align:justify; }
+  a:focus { outline:none; }
+</style>
+</head>
+<body>
+  <a href="#contenu">Aller au contenu</a>
+  <h1>Titre un</h1>
+  <h3>Titre trois (saut de niveau)</h3>
+  <main id="contenu">
+    <p class="bon">Texte lisible et contraste correct.</p>
+    <p class="faible">Texte gris trop clair.</p>
+    <p class="surimage">Texte sur degrade.</p>
+    <p class="justif">Paragraphe justifie.</p>
+
+    <img src="a.png" alt="Un chat roux">            <!-- OK -->
+    <img src="b.png">                                <!-- alt manquant -->
+    <img src="c.png" alt="">                         <!-- decorative -->
+    <a href="/x"><img src="d.png" alt=""></a>        <!-- lien sans nom -->
+
+    <a href="/z"><img src="e.png" alt="Suivez-nous"></a>    <!-- lien nomme par l alt de son image -->
+    <a href="/doc.pdf">Telecharger</a>
+    <a href="/y" target="_blank">Nouvelle fenetre</a>
+
+    <table>
+      <caption>Ventes</caption>
+      <tr><th scope="col">Mois</th><th scope="col">Total</th></tr>
+      <tr><td>Janvier</td><td>10</td></tr>
+    </table>
+    <table><tr><td>mise</td><td>en forme</td></tr></table>
+
+    <form action="/go">
+      <label for="ok">Nom</label><input id="ok" name="nom">
+      <input id="ko" name="mail" placeholder="Email">
+      <select id="s"><option>a</option></select>
+      <button type="submit">Envoyer</button>
+    </form>
+
+    <iframe src="https://example.org" title="Exemple"></iframe>
+    <iframe src="https://example.net"></iframe>
+
+    <video src="v.mp4" controls></video>
+
+    <div onclick="alert(1)">Faux bouton</div>
+    <p>- item factice<br>- autre item</p>
+    <p lang="en">Some english text.</p>
+    <p id="dup"></p><p id="dup"></p>
+
+    <!-- A : texte blanc sur image claire, SANS voile  -> doit etre signale -->
+    <div class="sur-image" style="position:relative;width:400px;height:120px">
+      <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iMTIwIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjEyMCIgZmlsbD0iI2NjY2NjYyIvPjwvc3ZnPg==" style="position:absolute;inset:0" alt="">
+      <p style="position:absolute;top:40px;left:20px;color:#fff;font-size:30px;margin:0">Texte sur image nue</p>
+    </div>
+    <!-- B : meme image, meme texte, AVEC voile noir 60% -> ne doit PAS etre signale -->
+    <div class="sur-image" style="position:relative;width:400px;height:120px">
+      <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAiIGhlaWdodD0iMTIwIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjEyMCIgZmlsbD0iI2NjY2NjYyIvPjwvc3ZnPg==" style="position:absolute;inset:0" alt="">
+      <div style="position:absolute;inset:0;background:rgba(0,0,0,.6)"></div>
+      <p style="position:absolute;top:40px;left:20px;color:#fff;font-size:30px;margin:0">Texte sur image voilee</p>
+    </div>
+    <!-- composants : bordure trop pale -> signale ; bordure franche -> non signale -->
+    <input id="bord-pale" style="border:1px solid #eeeeee;background:#fff" aria-label="Bordure pale">
+    <input id="bord-franche" style="border:1px solid #333333;background:#fff" aria-label="Bordure franche">
+
+    <h4 id="titre-vide"></h4>          <!-- balise de titre sans contenu : 8.9 -->
+    <p lang-test>Please contact us for more information about our products</p>
+    <table><caption>Matrice</caption><thead><tr><th scope="col">Produit</th><th scope="col">Bio</th><th scope="col">Sans gluten</th></tr></thead><tbody><tr><td>Pain</td><td>x</td><td></td></tr><tr><td>Brioche</td><td></td><td>x</td></tr></tbody></table><!-- matrice-test : entetes de lignes en TD -->
+    <a href="/a">En savoir plus</a>  <!-- intitule non explicite, sans complement -->
+    <a href="/b" title="En savoir plus sur nos tarifs">En savoir plus</a>  <!-- complete : conforme -->
+  </main>
+<script src="probe.js"></script>
+</body>
+</html>

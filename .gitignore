@@ -1,0 +1,7 @@
+_build/
+node_modules/
+*.docx
+*.pdf
+*.log
+.DS_Store
+Thumbs.db
